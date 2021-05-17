@@ -1,11 +1,6 @@
 import { createWithApollo } from "./createWithApollo";
 import { ApolloClient, InMemoryCache } from "@apollo/client";
-import {
-  Employee,
-  EmployeesQuery,
-  PaginatedPosts,
-  EmployeesDocument,
-} from "../generated/graphql";
+import { PaginatedPosts } from "../generated/graphql";
 import { NextPageContext } from "next";
 
 const createClient = (ctx: NextPageContext) =>
@@ -34,17 +29,6 @@ const createClient = (ctx: NextPageContext) =>
                 };
               },
             },
-            // employees: {
-            //   keyArgs: [],
-            //   merge(
-            //     existing: [Employee] | undefined,
-            //     incoming: [Employee]
-            //   ): [Employee] {
-            //     return {
-            //       employees: [existing, incoming],
-            //     };
-            //   },
-            // },
           },
         },
       },

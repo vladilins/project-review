@@ -2,17 +2,12 @@ import React from "react";
 import { withApollo } from "../utils/withApollo";
 import {
   useCreateEmployeeMutation,
-  MeQuery,
-  MeDocument,
   useDeleteEmployeeMutation,
   Employee as EmployeeType,
-  EmployeesQuery,
-  EmployeesDocument,
 } from "../generated/graphql";
 import {
   Box,
   Flex,
-  Link,
   Button,
   Heading,
   Stack,
@@ -20,18 +15,15 @@ import {
   ModalBody,
   ModalCloseButton,
   ModalContent,
-  ModalFooter,
   ModalHeader,
   ModalOverlay,
   useDisclosure,
   IconButton,
 } from "@chakra-ui/core";
 import { Formik, Form } from "formik";
-import router from "next/router";
 import { InputField } from "../components/InputField";
-import { toErrorMap } from "../utils/toErrorMap";
 import { Layout } from "../components/Layout";
-import { useEmployeesQuery, PostsQuery } from "../generated/graphql";
+import { useEmployeesQuery } from "../generated/graphql";
 import { useIsAuth } from "../utils/useIsAuth";
 
 const Employee: React.FC<{}> = () => {
@@ -67,16 +59,6 @@ const Employee: React.FC<{}> = () => {
               onSubmit={async (values, { resetForm }) => {
                 const { errors } = await createEmployee({
                   variables: { input: values },
-                  // update: (cache, { data }) => {
-                  //   console.log(data);
-
-                  //   cache.writeQuery<EmployeesQuery>({
-                  //     query: EmployeesDocument,
-                  //     data: {
-                  //       employees: [data.createEmployee],
-                  //     },
-                  //   });
-                  // },
                 });
 
                 if (!errors) {

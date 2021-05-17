@@ -1,6 +1,4 @@
 import React from "react";
-import { withUrqlClient } from "next-urql";
-import { createUrqlClient } from "../../utils/createUrqlClient";
 import { Layout } from "../../components/Layout";
 import { Heading, Box } from "@chakra-ui/core";
 import { useGetPostFromUrl } from "../../utils/useGetPostFromUrl";

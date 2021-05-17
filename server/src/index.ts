@@ -15,7 +15,6 @@ import { Post } from "./entities/Post";
 import { User } from "./entities/User";
 import path from "path";
 import { createUserLoader } from "./utils/createUserLoader";
-
 import { Employee } from "./entities/Employee";
 import { EmployeeResolver } from "./resolvers/employee";
 import { createEmployeeLoader } from "./utils/createEmployeeLoader";
@@ -35,8 +34,6 @@ const main = async () => {
     entities: [Post, User, Employee],
   });
   // await conn.runMigrations();
-
-  // await Post.delete({});
 
   const app = express();
 
@@ -60,8 +57,6 @@ const main = async () => {
         maxAge: 1000 * 60 * 60 * 24 * 365 * 10, // 10 years
         httpOnly: true,
         sameSite: "lax", // csrf
-        // secure: __prod__, // cookie only works in https
-        // domain: __prod__ ? ".codeponder.com" : undefined,
       },
       saveUninitialized: false,
       secret: process.env.SESSION_SECRET as string,
