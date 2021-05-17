@@ -42,6 +42,7 @@ const Index = () => {
                     </Link>
                   </NextLink>
                   <Text>created by {p.creator.username}</Text>
+                  <Text>assigned to by {p.responsible.username}</Text>
                   <Flex align="center">
                     <Text flex={1} mt={4}>
                       {p.textSnippet}

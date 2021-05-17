@@ -131,8 +131,6 @@ const Employee: React.FC<{}> = () => {
                   {e.email}
                 </Box>
                 <Box>
-                  <IconButton mr={4} icon="edit" aria-label="Edit Post" />
-
                   <IconButton
                     icon="delete"
                     aria-label="Delete Post"
