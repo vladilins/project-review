@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { Redis } from "ioredis";
+import { createEmployeeLoader } from "./utils/createEmployeeLoader";
 import { createUserLoader } from "./utils/createUserLoader";
-import { createUpdootLoader } from "./utils/createUpdootLoader";
 
 export type MyContext = {
   //@ts-ignore
@@ -9,5 +9,5 @@ export type MyContext = {
   redis: Redis;
   res: Response;
   userLoader: ReturnType<typeof createUserLoader>;
-  updootLoader: ReturnType<typeof createUpdootLoader>;
+  employeeLoader: ReturnType<typeof createEmployeeLoader>;
 };

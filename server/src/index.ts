@@ -18,6 +18,7 @@ import { createUserLoader } from "./utils/createUserLoader";
 
 import { Employee } from "./entities/Employee";
 import { EmployeeResolver } from "./resolvers/employee";
+import { createEmployeeLoader } from "./utils/createEmployeeLoader";
 
 const main = async () => {
   //@ts-ignore
@@ -78,6 +79,7 @@ const main = async () => {
       res,
       redis,
       userLoader: createUserLoader(),
+      employeeLoader: createEmployeeLoader(),
     }),
   });
 

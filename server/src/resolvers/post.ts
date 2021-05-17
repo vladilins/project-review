@@ -50,8 +50,8 @@ export class PostResolver {
   }
 
   @FieldResolver(() => Employee)
-  responsible(@Root() post: Post) {
-    return Employee.findOne(post.responsibleId);
+  responsible(@Root() post: Post, @Ctx() { employeeLoader }: MyContext) {
+    return employeeLoader.load(post.responsibleId);
   }
 
   @Query(() => PaginatedPosts)
@@ -97,17 +97,10 @@ export class PostResolver {
     @Arg("input", () => PostInput) input: PostInput,
     @Ctx() { req }: MyContext
   ): Promise<Post> {
-    const post = await Post.create({
+    return Post.create({
       ...input,
       creatorId: req.session.userId,
     }).save();
-    console.log(post);
-
-    return post;
-    // return Post.create({
-    //   ...input,
-    //   creatorId: req.session.userId,
-    // }).save();
   }
 
   @Mutation(() => Post, { nullable: true })
