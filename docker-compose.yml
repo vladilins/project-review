@@ -1,0 +1,51 @@
+version: "3.7"
+services:
+  server:
+    build:
+      context: ./server
+    container_name: server
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@db:5432
+      DB_DATABASE: postgres
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_PORT: 5432
+      DB_HOST: db
+      PORT: 4000
+      REDIS_URL: redis:6379
+      SESSION_SECRET: qowiueojwojfalksdjoqiwueo
+      COOKIE_NAME: qid
+      CORS_ORIGIN: http://localhost:3000
+    depends_on:
+      - db
+    ports:
+      - "4000:4000"
+    volumes:
+      - /app/node_modules
+      - ./server:/app
+
+  client:
+    build:
+      context: ./client
+    depends_on:
+      - server
+    ports:
+      - "3000:3000"
+    environment:
+      SERVER_NAME: server
+    volumes:
+      - /app/node_modules
+      - ./client:/app
+
+  db:
+    image: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5434:5432"
+
+  redis:
+    image: "redis:latest"
+    ports:
+      - "6380:6379"

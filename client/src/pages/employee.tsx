@@ -1,0 +1,158 @@
+import React from "react";
+import { withApollo } from "../utils/withApollo";
+import {
+  useCreateEmployeeMutation,
+  MeQuery,
+  MeDocument,
+  useDeleteEmployeeMutation,
+  Employee as EmployeeType,
+  EmployeesQuery,
+  EmployeesDocument,
+} from "../generated/graphql";
+import {
+  Box,
+  Flex,
+  Link,
+  Button,
+  Heading,
+  Stack,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
+  useDisclosure,
+  IconButton,
+} from "@chakra-ui/core";
+import { Formik, Form } from "formik";
+import router from "next/router";
+import { InputField } from "../components/InputField";
+import { toErrorMap } from "../utils/toErrorMap";
+import { Layout } from "../components/Layout";
+import { useEmployeesQuery, PostsQuery } from "../generated/graphql";
+import { useIsAuth } from "../utils/useIsAuth";
+
+const Employee: React.FC<{}> = () => {
+  useIsAuth();
+  const { data, error, loading, refetch } = useEmployeesQuery({});
+  const [createEmployee] = useCreateEmployeeMutation();
+  const [deleteEmployee] = useDeleteEmployeeMutation();
+  const { isOpen, onOpen, onClose } = useDisclosure();
+
+  if (!loading && !data) {
+    return (
+      <div>
+        <div>you got query failed for some reason</div>
+        <div>{error?.message}</div>
+      </div>
+    );
+  }
+
+  return (
+    <Layout variant="small">
+      <Button onClick={onOpen} mb={4}>
+        Create Employee
+      </Button>
+
+      <Modal isOpen={isOpen} onClose={onClose}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Create Employee</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <Formik
+              initialValues={{ username: "", email: "" }}
+              onSubmit={async (values, { resetForm }) => {
+                const { errors } = await createEmployee({
+                  variables: { input: values },
+                  // update: (cache, { data }) => {
+                  //   console.log(data);
+
+                  //   cache.writeQuery<EmployeesQuery>({
+                  //     query: EmployeesDocument,
+                  //     data: {
+                  //       employees: [data.createEmployee],
+                  //     },
+                  //   });
+                  // },
+                });
+
+                if (!errors) {
+                  await refetch();
+                  resetForm();
+                  onClose();
+                }
+              }}
+            >
+              {({ isSubmitting }) => (
+                <Form>
+                  <InputField
+                    name="username"
+                    placeholder="username"
+                    label="Username"
+                  />
+                  <Box mt={4}>
+                    <InputField
+                      name="email"
+                      placeholder="email"
+                      label="Email"
+                      type="email"
+                    />
+                  </Box>
+
+                  <Button
+                    mt={4}
+                    mb={4}
+                    type="submit"
+                    isLoading={isSubmitting}
+                    variantColor="teal"
+                  >
+                    Create Employee
+                  </Button>
+                </Form>
+              )}
+            </Formik>
+          </ModalBody>
+        </ModalContent>
+      </Modal>
+
+      {!data && loading ? (
+        <div>loading...</div>
+      ) : (
+        <Stack spacing={8}>
+          {data!.employees.map((e: EmployeeType) =>
+            !e ? null : (
+              <Flex key={e.id} p={5} shadow="md" borderWidth="1px">
+                <Box flex={1}>
+                  <Heading fontSize="xl">{e.username}</Heading>
+
+                  {e.email}
+                </Box>
+                <Box>
+                  <IconButton mr={4} icon="edit" aria-label="Edit Post" />
+
+                  <IconButton
+                    icon="delete"
+                    aria-label="Delete Post"
+                    onClick={() => {
+                      deleteEmployee({
+                        variables: { id: e.id },
+                        update: (cache) => {
+                          cache.evict({ id: "Employee:" + e.id });
+                        },
+                      });
+                    }}
+                  />
+                </Box>
+              </Flex>
+            )
+          )}
+        </Stack>
+      )}
+    </Layout>
+  );
+};
+
+export default withApollo({ ssr: false })(Employee);
