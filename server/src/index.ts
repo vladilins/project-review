@@ -14,8 +14,6 @@ import { createConnection } from "typeorm";
 import { Post } from "./entities/Post";
 import { User } from "./entities/User";
 import path from "path";
-// import { Updoot } from "./entities/Updoot";
-// import { createUpdootLoader } from "./utils/createUpdootLoader";
 import { createUserLoader } from "./utils/createUserLoader";
 
 import { Employee } from "./entities/Employee";
@@ -31,7 +29,7 @@ const main = async () => {
     host: process.env.DB_HOST,
     port: process.env.DB_PORT,
     logging: true,
-    synchronize: true,
+    // synchronize: true,
     migrations: [path.join(__dirname, "./migrations/*")],
     entities: [Post, User, Employee],
   });
@@ -80,7 +78,6 @@ const main = async () => {
       res,
       redis,
       userLoader: createUserLoader(),
-      // updootLoader: createUpdootLoader(),
     }),
   });
 

@@ -34,7 +34,6 @@ export type FieldError = {
 
 export type Mutation = {
   __typename?: 'Mutation';
-  vote: Scalars['Boolean'];
   createPost: Post;
   updatePost?: Maybe<Post>;
   deletePost: Scalars['Boolean'];
@@ -46,12 +45,6 @@ export type Mutation = {
   createEmployee: Employee;
   updateEmployee: Scalars['Int'];
   deleteEmployee: Scalars['Int'];
-};
-
-
-export type MutationVoteArgs = {
-  value: Scalars['Int'];
-  postId: Scalars['Int'];
 };
 
 
@@ -120,10 +113,10 @@ export type Post = {
   id: Scalars['Float'];
   title: Scalars['String'];
   text: Scalars['String'];
-  points: Scalars['Float'];
-  voteStatus?: Maybe<Scalars['Int']>;
   creatorId: Scalars['Float'];
   creator: User;
+  responsibleId: Scalars['Float'];
+  responsible: Employee;
   createdAt: Scalars['String'];
   updatedAt: Scalars['String'];
   textSnippet: Scalars['String'];
@@ -132,6 +125,7 @@ export type Post = {
 export type PostInput = {
   title: Scalars['String'];
   text: Scalars['String'];
+  responsibleId: Scalars['Float'];
 };
 
 export type Query = {
@@ -177,10 +171,13 @@ export type UsernamePasswordInput = {
 
 export type PostSnippetFragment = (
   { __typename?: 'Post' }
-  & Pick<Post, 'id' | 'createdAt' | 'updatedAt' | 'title' | 'points' | 'textSnippet' | 'voteStatus'>
+  & Pick<Post, 'id' | 'createdAt' | 'updatedAt' | 'title' | 'textSnippet'>
   & { creator: (
     { __typename?: 'User' }
     & Pick<User, 'id' | 'username'>
+  ), responsible: (
+    { __typename?: 'Employee' }
+    & Pick<Employee, 'id' | 'username' | 'email'>
   ) }
 );
 
@@ -241,7 +238,7 @@ export type CreatePostMutation = (
   { __typename?: 'Mutation' }
   & { createPost: (
     { __typename?: 'Post' }
-    & Pick<Post, 'id' | 'createdAt' | 'updatedAt' | 'title' | 'text' | 'points' | 'creatorId'>
+    & Pick<Post, 'id' | 'createdAt' | 'updatedAt' | 'title' | 'text' | 'creatorId' | 'responsibleId'>
   ) }
 );
 
@@ -336,17 +333,6 @@ export type UpdatePostMutation = (
   )> }
 );
 
-export type VoteMutationVariables = Exact<{
-  value: Scalars['Int'];
-  postId: Scalars['Int'];
-}>;
-
-
-export type VoteMutation = (
-  { __typename?: 'Mutation' }
-  & Pick<Mutation, 'vote'>
-);
-
 export type EmployeesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -378,10 +364,13 @@ export type PostQuery = (
   { __typename?: 'Query' }
   & { post?: Maybe<(
     { __typename?: 'Post' }
-    & Pick<Post, 'id' | 'createdAt' | 'updatedAt' | 'title' | 'points' | 'text' | 'voteStatus'>
+    & Pick<Post, 'id' | 'createdAt' | 'updatedAt' | 'title' | 'text'>
     & { creator: (
       { __typename?: 'User' }
       & Pick<User, 'id' | 'username'>
+    ), responsible: (
+      { __typename?: 'Employee' }
+      & Pick<Employee, 'id' | 'username' | 'email'>
     ) }
   )> }
 );
@@ -410,12 +399,15 @@ export const PostSnippetFragmentDoc = gql`
   createdAt
   updatedAt
   title
-  points
   textSnippet
-  voteStatus
   creator {
     id
     username
+  }
+  responsible {
+    id
+    username
+    email
   }
 }
     `;
@@ -521,8 +513,8 @@ export const CreatePostDocument = gql`
     updatedAt
     title
     text
-    points
     creatorId
+    responsibleId
   }
 }
     `;
@@ -812,38 +804,6 @@ export function useUpdatePostMutation(baseOptions?: Apollo.MutationHookOptions<U
 export type UpdatePostMutationHookResult = ReturnType<typeof useUpdatePostMutation>;
 export type UpdatePostMutationResult = Apollo.MutationResult<UpdatePostMutation>;
 export type UpdatePostMutationOptions = Apollo.BaseMutationOptions<UpdatePostMutation, UpdatePostMutationVariables>;
-export const VoteDocument = gql`
-    mutation Vote($value: Int!, $postId: Int!) {
-  vote(value: $value, postId: $postId)
-}
-    `;
-export type VoteMutationFn = Apollo.MutationFunction<VoteMutation, VoteMutationVariables>;
-
-/**
- * __useVoteMutation__
- *
- * To run a mutation, you first call `useVoteMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useVoteMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [voteMutation, { data, loading, error }] = useVoteMutation({
- *   variables: {
- *      value: // value for 'value'
- *      postId: // value for 'postId'
- *   },
- * });
- */
-export function useVoteMutation(baseOptions?: Apollo.MutationHookOptions<VoteMutation, VoteMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<VoteMutation, VoteMutationVariables>(VoteDocument, options);
-      }
-export type VoteMutationHookResult = ReturnType<typeof useVoteMutation>;
-export type VoteMutationResult = Apollo.MutationResult<VoteMutation>;
-export type VoteMutationOptions = Apollo.BaseMutationOptions<VoteMutation, VoteMutationVariables>;
 export const EmployeesDocument = gql`
     query Employees {
   employees {
@@ -921,12 +881,15 @@ export const PostDocument = gql`
     createdAt
     updatedAt
     title
-    points
     text
-    voteStatus
     creator {
       id
       username
+    }
+    responsible {
+      id
+      username
+      email
     }
   }
 }
