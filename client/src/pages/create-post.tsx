@@ -1,4 +1,4 @@
-import { Box, Button, Select, Stack } from "@chakra-ui/core";
+import { Box, Button, FormControl, FormLabel, Select } from "@chakra-ui/core";
 import { Form, Formik } from "formik";
 import { useRouter } from "next/router";
 import React from "react";
@@ -20,8 +20,10 @@ const CreatePost: React.FC<{}> = ({}) => {
   return (
     <Layout variant="small">
       <Formik
-        initialValues={{ title: "", text: "" }}
+        initialValues={{ title: "", text: "", responsibleId: 0 }}
         onSubmit={async (values) => {
+          values.responsibleId = +values.responsibleId;
+
           const { errors } = await createPost({
             variables: { input: values },
             update: (cache) => {
@@ -33,7 +35,7 @@ const CreatePost: React.FC<{}> = ({}) => {
           }
         }}
       >
-        {({ isSubmitting }) => (
+        {({ isSubmitting, setFieldValue, values }) => (
           <Form>
             <InputField name="title" placeholder="title" label="Title" />
             <Box mt={4}>
@@ -48,14 +50,27 @@ const CreatePost: React.FC<{}> = ({}) => {
             {!data && loading ? (
               <div>loading...</div>
             ) : (
-              <Box mt={4}>
-                <Select placeholder="Select option">
+              <FormControl mt={4}>
+                <FormLabel>Responsible</FormLabel>
+                <Select
+                  name="responsibleId"
+                  onChange={(e) =>
+                    setFieldValue("responsibleId", e.target.value)
+                  }
+                  id="responsibleId"
+                  placeholder="Select employee"
+                >
                   {data!.employees.map((e: Employee) =>
-                    !e ? null : <option value={e.id}>{e.username}</option>
+                    !e ? null : (
+                      <option key={e.id} value={e.id}>
+                        {e.username}
+                      </option>
+                    )
                   )}
                 </Select>
-              </Box>
+              </FormControl>
             )}
+
             <Button
               mt={4}
               type="submit"
