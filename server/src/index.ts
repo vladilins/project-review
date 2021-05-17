@@ -29,7 +29,7 @@ const main = async () => {
     host: process.env.DB_HOST,
     port: process.env.DB_PORT,
     logging: true,
-    // synchronize: true,
+    synchronize: true,
     migrations: [path.join(__dirname, "./migrations/*")],
     entities: [Post, User, Employee],
   });

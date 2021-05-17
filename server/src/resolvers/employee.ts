@@ -49,4 +49,10 @@ export class EmployeeResolver {
   employees(): Promise<Employee[]> {
     return Employee.find();
   }
+
+  @Query(() => Employee, { nullable: true })
+  @UseMiddleware(isAuth)
+  employee(@Arg("id", () => Int) id: number) {
+    return Employee.findOne(id);
+  }
 }
