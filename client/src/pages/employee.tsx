@@ -135,4 +135,4 @@ const Employee: React.FC<{}> = () => {
   );
 };
 
-export default withApollo({ ssr: false })(Employee);
+export default withApollo({ ssr: true })(Employee);
