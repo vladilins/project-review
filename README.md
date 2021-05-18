@@ -47,4 +47,5 @@ docker-compose up
 - Comments for the projects
 - Better error handling and validation
 - Styling
+- Refactor components
 - Tests
